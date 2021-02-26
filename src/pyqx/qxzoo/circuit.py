@@ -1,3 +1,4 @@
+from typing import List
 from julia import QXZoo as jl_QXZoo
 from multimethod import multimethod
 
@@ -28,6 +29,12 @@ class Circuit:
             "c_r_phase" : jl_QXZoo.DefaultGates.c_r_phase, 
         }
 
+    def print_gates(self):
+        print(self._jl_cct)
+
+    def __lshift__(self, other):
+        jl_QXZoo.Circuit.append_b(self._jl_cct, other._jl_cct)
+
     @multimethod
     def apply_gate(self, gate_label: str, target: int):
         jl_QXZoo.Circuit.append_b(self._jl_cct, self.gate_set_1q_static[gate_label](target+1))
@@ -39,7 +46,7 @@ class Circuit:
     @multimethod
     def apply_gate(self, gate_label: str, target: int, angle: float):
         jl_QXZoo.Circuit.append_b(self._jl_cct, self.gate_set_1q_param[gate_label](target+1, angle))
-        
+
     @multimethod
     def apply_gate(self, gate_label: str, ctrl: int, target: int, angle: float):
         jl_QXZoo.Circuit.append_b(self._jl_cct, self.gate_set_2q_param[gate_label](target+1, ctrl+1, angle))
